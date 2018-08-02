@@ -485,7 +485,7 @@ S2.define("almond", function(){});
 
 /* global jQuery:false, $:false */
 S2.define('jquery',[],function () {
-  var _$ = jQuery || $;
+  var _$ = window.jQuery || window.$;
 
   if (_$ == null && console && console.error) {
     console.error(
@@ -1392,7 +1392,7 @@ S2.define('select2/selection/base',[
   '../utils',
   '../keys'
 ], function ($, Utils, KEYS) {
-  function BaseSelection ($element, options) {
+  function BaseSelection($element, options) {
     this.$element = $element;
     this.options = options;
 
@@ -1507,13 +1507,15 @@ S2.define('select2/selection/base',[
 
   BaseSelection.prototype._attachCloseHandler = function (container) {
     var self = this;
-
-    $(document.body).on('mousedown.select2.' + container.id, function (e) {
+    var $body = container.$element ? container.$element.closest('body') : $(document.body);
+    // $(document.body).on('mousedown.select2.' + container.id, function (e) {
+    $body.on('touchstart.select2.' + container.id + ' mousedown.select2.' + container.id, function (e) {
       var $target = $(e.target);
 
       var $select = $target.closest('.select2');
 
-      var $all = $('.select2.select2-container--open');
+      // var $all = $('.select2.select2-container--open');
+      var $all = $('.select2.select2-container--open', $body);
 
       $all.each(function () {
         var $this = $(this);
@@ -1530,7 +1532,10 @@ S2.define('select2/selection/base',[
   };
 
   BaseSelection.prototype._detachCloseHandler = function (container) {
-    $(document.body).off('mousedown.select2.' + container.id);
+    // $(document.body).off('mousedown.select2.' + container.id);
+    var $body = container.$element ? container.$element.closest('body') : $(document.body);
+    $body.off('mousedown.select2.' + container.id);
+    $body.off('touchstart.select2.' + container.id);
   };
 
   BaseSelection.prototype.position = function ($selection, $container) {
@@ -1817,7 +1822,8 @@ S2.define('select2/selection/allowClear',[
   '../keys',
   '../utils'
 ], function ($, KEYS, Utils) {
-  function AllowClear () { }
+  function AllowClear() {
+  }
 
   AllowClear.prototype.bind = function (decorated, container, $container) {
     var self = this;
@@ -1833,10 +1839,11 @@ S2.define('select2/selection/allowClear',[
       }
     }
 
-    this.$selection.on('mousedown', '.select2-selection__clear',
+    // this.$selection.on('mousedown', '.select2-selection__clear',
+    this.$selection.on('touchstart mousedown', '.select2-selection__clear',
       function (evt) {
         self._handleClear(evt);
-    });
+      });
 
     container.on('keypress', function (evt) {
       self._handleKeyboardClear(evt, container);
@@ -1907,13 +1914,13 @@ S2.define('select2/selection/allowClear',[
     decorated.call(this, data);
 
     if (this.$selection.find('.select2-selection__placeholder').length > 0 ||
-        data.length === 0) {
+      data.length === 0) {
       return;
     }
 
     var $remove = $(
       '<span class="select2-selection__clear">' +
-        '&times;' +
+      '&times;' +
       '</span>'
     );
     Utils.StoreData($remove[0], 'data', data);
@@ -4229,7 +4236,7 @@ S2.define('select2/dropdown/attachBody',[
   'jquery',
   '../utils'
 ], function ($, Utils) {
-  function AttachBody (decorated, $element, options) {
+  function AttachBody(decorated, $element, options) {
     this.$dropdownParent = options.get('dropdownParent') || $(document.body);
 
     decorated.call(this, $element, options);
@@ -4266,7 +4273,8 @@ S2.define('select2/dropdown/attachBody',[
       self._detachPositioningHandler(container);
     });
 
-    this.$dropdownContainer.on('mousedown', function (evt) {
+    // this.$dropdownContainer.on('mousedown', function (evt) {
+    this.$dropdownContainer.on('touchstart mousedown', function (evt) {
       evt.stopPropagation();
     });
   };
@@ -4308,44 +4316,44 @@ S2.define('select2/dropdown/attachBody',[
   };
 
   AttachBody.prototype._attachPositioningHandler =
-      function (decorated, container) {
-    var self = this;
+    function (decorated, container) {
+      var self = this;
 
-    var scrollEvent = 'scroll.select2.' + container.id;
-    var resizeEvent = 'resize.select2.' + container.id;
-    var orientationEvent = 'orientationchange.select2.' + container.id;
+      var scrollEvent = 'scroll.select2.' + container.id;
+      var resizeEvent = 'resize.select2.' + container.id;
+      var orientationEvent = 'orientationchange.select2.' + container.id;
 
-    var $watchers = this.$container.parents().filter(Utils.hasScroll);
-    $watchers.each(function () {
-      Utils.StoreData(this, 'select2-scroll-position', {
-        x: $(this).scrollLeft(),
-        y: $(this).scrollTop()
+      var $watchers = this.$container.parents().filter(Utils.hasScroll);
+      $watchers.each(function () {
+        Utils.StoreData(this, 'select2-scroll-position', {
+          x: $(this).scrollLeft(),
+          y: $(this).scrollTop()
+        });
       });
-    });
 
-    $watchers.on(scrollEvent, function (ev) {
-      var position = Utils.GetData(this, 'select2-scroll-position');
-      $(this).scrollTop(position.y);
-    });
+      $watchers.on(scrollEvent, function (ev) {
+        var position = Utils.GetData(this, 'select2-scroll-position');
+        $(this).scrollTop(position.y);
+      });
 
-    $(window).on(scrollEvent + ' ' + resizeEvent + ' ' + orientationEvent,
-      function (e) {
-      self._positionDropdown();
-      self._resizeDropdown();
-    });
-  };
+      $(window).on(scrollEvent + ' ' + resizeEvent + ' ' + orientationEvent,
+        function (e) {
+          self._positionDropdown();
+          self._resizeDropdown();
+        });
+    };
 
   AttachBody.prototype._detachPositioningHandler =
-      function (decorated, container) {
-    var scrollEvent = 'scroll.select2.' + container.id;
-    var resizeEvent = 'resize.select2.' + container.id;
-    var orientationEvent = 'orientationchange.select2.' + container.id;
+    function (decorated, container) {
+      var scrollEvent = 'scroll.select2.' + container.id;
+      var resizeEvent = 'resize.select2.' + container.id;
+      var orientationEvent = 'orientationchange.select2.' + container.id;
 
-    var $watchers = this.$container.parents().filter(Utils.hasScroll);
-    $watchers.off(scrollEvent);
+      var $watchers = this.$container.parents().filter(Utils.hasScroll);
+      $watchers.off(scrollEvent);
 
-    $(window).off(scrollEvent + ' ' + resizeEvent + ' ' + orientationEvent);
-  };
+      $(window).off(scrollEvent + ' ' + resizeEvent + ' ' + orientationEvent);
+    };
 
   AttachBody.prototype._positionDropdown = function () {
     var $window = $(window);

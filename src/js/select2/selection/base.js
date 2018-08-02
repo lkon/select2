@@ -3,7 +3,7 @@ define([
   '../utils',
   '../keys'
 ], function ($, Utils, KEYS) {
-  function BaseSelection ($element, options) {
+  function BaseSelection($element, options) {
     this.$element = $element;
     this.options = options;
 
@@ -118,13 +118,15 @@ define([
 
   BaseSelection.prototype._attachCloseHandler = function (container) {
     var self = this;
-
-    $(document.body).on('mousedown.select2.' + container.id, function (e) {
+    var $body = container.$element ? container.$element.closest('body') : $(document.body);
+    // $(document.body).on('mousedown.select2.' + container.id, function (e) {
+    $body.on('touchstart.select2.' + container.id + ' mousedown.select2.' + container.id, function (e) {
       var $target = $(e.target);
 
       var $select = $target.closest('.select2');
 
-      var $all = $('.select2.select2-container--open');
+      // var $all = $('.select2.select2-container--open');
+      var $all = $('.select2.select2-container--open', $body);
 
       $all.each(function () {
         var $this = $(this);
@@ -141,7 +143,10 @@ define([
   };
 
   BaseSelection.prototype._detachCloseHandler = function (container) {
-    $(document.body).off('mousedown.select2.' + container.id);
+    // $(document.body).off('mousedown.select2.' + container.id);
+    var $body = container.$element ? container.$element.closest('body') : $(document.body);
+    $body.off('mousedown.select2.' + container.id);
+    $body.off('touchstart.select2.' + container.id);
   };
 
   BaseSelection.prototype.position = function ($selection, $container) {

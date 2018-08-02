@@ -1,6 +1,6 @@
 /* global jQuery:false, $:false */
 define(function () {
-  var _$ = jQuery || $;
+  var _$ = window.jQuery || window.$;
 
   if (_$ == null && console && console.error) {
     console.error(

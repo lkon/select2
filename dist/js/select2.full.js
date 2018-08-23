@@ -1091,7 +1091,7 @@ S2.define('select2/results',[
 
       if (container.isOpen()) {
         self.setClasses();
-        self.highlightFirstItem();
+        // self.highlightFirstItem();
       }
     });
 
@@ -1114,7 +1114,7 @@ S2.define('select2/results',[
       }
 
       self.setClasses();
-      self.highlightFirstItem();
+      // self.highlightFirstItem();
     });
 
     container.on('unselect', function () {
@@ -1123,7 +1123,7 @@ S2.define('select2/results',[
       }
 
       self.setClasses();
-      self.highlightFirstItem();
+      // self.highlightFirstItem();
     });
 
     container.on('open', function () {

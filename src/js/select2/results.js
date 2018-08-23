@@ -253,7 +253,7 @@ define([
 
       if (container.isOpen()) {
         self.setClasses();
-        self.highlightFirstItem();
+        // self.highlightFirstItem();
       }
     });
 
@@ -276,7 +276,7 @@ define([
       }
 
       self.setClasses();
-      self.highlightFirstItem();
+      // self.highlightFirstItem();
     });
 
     container.on('unselect', function () {
@@ -285,7 +285,7 @@ define([
       }
 
       self.setClasses();
-      self.highlightFirstItem();
+      // self.highlightFirstItem();
     });
 
     container.on('open', function () {
